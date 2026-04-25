@@ -3,493 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#02060a">
-
+<title>JARVIS X</title>
 <style>
 *{box-sizing:border-box}
 body{
-  margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle,#0b2733,#02060a 70%);
-  color:white;
-  font-family:Arial,sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin:0;min-height:100vh;font-family:Arial,sans-serif;color:#dff8ff;
+  background:radial-gradient(circle at center,#082435,#010409 72%);
   overflow:hidden;
 }
-.app{
-  width:min(820px,94%);
-  text-align:center;
+.bg{
+  position:fixed;inset:0;
+  background:
+    linear-gradient(rgba(0,213,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,213,255,.04) 1px,transparent 1px);
+  background-size:42px 42px;
+  pointer-events:none;
 }
-h1{
-  color:#ffe066;
-  letter-spacing:12px;
-  font-size:48px;
-  text-shadow:0 0 22px #ffe066;
-}
-.sub{
-  color:#8deaff;
-  margin-bottom:25px;
-}
+.app{position:relative;z-index:2;min-height:100vh;padding:18px;display:flex;flex-direction:column;align-items:center}
+.top{width:100%;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;color:#00e5ff;letter-spacing:3px}
+.clock{color:#ffe066;font-weight:900}
+h1{margin:22px 0 4px;color:#ffe066;letter-spacing:14px;font-size:46px;text-shadow:0 0 24px #ffe066}
+.sub{color:#8deaff;margin-bottom:16px}
 .core{
-  width:320px;
-  height:320px;
-  border-radius:50%;
-  margin:20px auto;
-  border:5px solid #36b7ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  font-weight:900;
-  cursor:pointer;
-  user-select:none;
-  touch-action:manipulation;
-  box-shadow:0 0 55px #36b7ff,inset 0 0 65px #06384c;
-  position:relative;
+  width:330px;height:330px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:14px auto;border:3px solid #00d9ff;color:#eaffff;font-size:25px;font-weight:900;
+  cursor:pointer;user-select:none;touch-action:manipulation;position:relative;
+  background:radial-gradient(circle,rgba(0,217,255,.13),rgba(0,0,0,.15) 60%);
+  box-shadow:0 0 55px rgba(0,217,255,.75),inset 0 0 70px rgba(0,217,255,.25);
 }
 .core:before,.core:after{
-  content:"";
-  position:absolute;
-  border-radius:50%;
-  inset:-25px;
-  border:2px dashed rgba(54,183,255,.35);
-  animation:spin 10s linear infinite;
+  content:"";position:absolute;border-radius:50%;border:2px dashed rgba(0,217,255,.38);
+  animation:spin 12s linear infinite;
 }
-.core:after{
-  inset:-50px;
-  animation-duration:16s;
+.core:before{inset:-24px}.core:after{inset:-52px;animation-duration:20s}
+.dots{
+  position:absolute;inset:36px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,217,255,.9) 1.2px,transparent 1.8px);
+  background-size:18px 18px;opacity:.45;mask-image:radial-gradient(circle,transparent 42%,#000 43%,#000 67%,transparent 68%);
 }
+.listen{border-color:#00ff88;box-shadow:0 0 80px #00ff88,inset 0 0 90px rgba(0,255,136,.25);transform:scale(1.03)}
+.speak{border-color:#ffd84d;box-shadow:0 0 90px #ffd84d,inset 0 0 95px rgba(255,216,77,.28);transform:scale(1.08)}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.listen{
-  border-color:#00ff88;
-  box-shadow:0 0 75px #00ff88,inset 0 0 80px #003d25;
-}
-.speak{
-  border-color:#ffd84d;
-  box-shadow:0 0 75px #ffd84d,inset 0 0 80px #4b3900;
-}
-
 .panel{
-  margin-top:35px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:24px;
-  padding:18px;
+  width:min(980px,96%);margin-top:20px;padding:16px;border-radius:24px;
+  background:rgba(0,24,38,.72);border:1px solid rgba(0,217,255,.25);
+  box-shadow:0 0 35px rgba(0,217,255,.12);backdrop-filter:blur(10px)
 }
-.quick button{
-  border:0;
-  border-radius:14px;
-  padding:12px 16px;
-  margin:5px;
-  font-weight:900;
-  cursor:pointer;
-  touch-action:manipulation;
+.cmds{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button{
+  border:1px solid rgba(0,217,255,.35);border-radius:14px;padding:12px 15px;margin:4px;
+  background:rgba(0,217,255,.08);color:#dff8ff;font-weight:900;cursor:pointer;touch-action:manipulation
 }
-.yellow{background:#ffd84d;color:#111}
-.blue{background:#124052;color:white}
-.green{background:#116b3a;color:white}
-.red{background:#9c2020;color:white}
-
-.textbox{
-  margin-top:12px;
-  background:#071923;
-  border-radius:15px;
-  padding:15px;
-  color:#bdefff;
-}
+button:hover{background:rgba(0,217,255,.18)}
+.yellow{background:#ffd84d;color:#111}.red{background:#912020;color:white}.green{background:#0b703e;color:white}
 .log{
-  margin-top:12px;
-  text-align:left;
-  max-height:190px;
-  overflow:auto;
-  background:rgba(0,0,0,.25);
-  border-radius:16px;
-  padding:12px;
-  color:#dff9ff;
-  font-size:14px;
+  margin-top:14px;max-height:190px;overflow:auto;text-align:left;padding:12px;border-radius:16px;
+  background:rgba(0,0,0,.35);border:1px solid rgba(0,217,255,.18);font-size:14px
 }
-.small{
-  color:#bdefff;
-  font-size:14px;
+.sideBtn{
+  position:fixed;right:18px;top:50%;transform:translateY(-50%);
+  width:70px;height:70px;border-radius:50%;font-size:36px;z-index:5;
+  background:radial-gradient(circle,rgba(0,217,255,.28),rgba(0,0,0,.35));
+  box-shadow:0 0 28px rgba(0,217,255,.45)
 }
-@media(max-width:650px){
-  h1{font-size:36px}
-  .core{width:250px;height:250px}
+.drawer{
+  position:fixed;right:-360px;top:0;width:340px;max-width:88vw;height:100vh;z-index:10;
+  background:rgba(0,18,30,.96);border-left:1px solid rgba(0,217,255,.35);
+  box-shadow:-20px 0 50px rgba(0,0,0,.45);padding:20px;transition:.25s;
 }
+.drawer.open{right:0}
+.drawer h2{color:#ffe066}
+.item{
+  padding:14px;border-radius:14px;background:rgba(0,217,255,.08);margin:10px 0;
+  border:1px solid rgba(0,217,255,.18)
+}
+.item b{color:#00e5ff}
+.small{font-size:13px;color:#9eefff;line-height:1.6}
+input{
+  width:100%;padding:12px;border-radius:12px;border:1px solid rgba(0,217,255,.25);
+  background:rgba(0,0,0,.25);color:white;margin-top:8px
+}
+@media(max-width:700px){h1{font-size:34px}.core{width:250px;height:250px}.sideBtn{width:58px;height:58px}}
 </style>
 </head>
-
 <body>
+<div class="bg"></div>
+
+<button class="sideBtn" onclick="toggleDrawer()">›</button>
+
+<div class="drawer" id="drawer">
+  <h2>JARVIS PANEL</h2>
+  <div class="item"><b>Uyku</b><div id="sleepBox" class="small">Henüz kayıt yok</div></div>
+  <div class="item"><b>Ödevler</b><div id="homeworkBox" class="small">Henüz kayıt yok</div></div>
+  <div class="item"><b>Planlar</b><div id="planBox" class="small">Henüz plan yok</div></div>
+  <div class="item"><b>Notlar</b><div id="noteBox" class="small">Henüz not yok</div></div>
+
+  <div class="item">
+    <b>Elle kayıt</b>
+    <input id="manual" placeholder="Örn: 8 saat uyudum / matematik ödevim bitti">
+    <button onclick="handle(document.getElementById('manual').value)">Kaydet</button>
+  </div>
+</div>
 
 <div class="app">
-  <h1>JARVIS</h1>
-  <div class="sub">Yuvarlağa dokun • konuş • bırak • Jarvis cevaplasın</div>
+  <div class="top">
+    <div class="logo">JARVIS X • ONLINE</div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
 
-  <div id="core" class="core" onclick="startJarvis()">DOKUN</div>
+  <h1>JARVIS</h1>
+  <div class="sub">Yuvarlağa dokun • 5 saniye konuş • Jarvis cevaplasın</div>
+
+  <div class="core" id="core" onclick="startJarvis()">
+    <div class="dots"></div>
+    <span id="coreText">DOKUN</span>
+  </div>
 
   <div class="panel">
-    <div class="quick">
+    <div class="cmds">
       <button class="yellow" onclick="startJarvis()">🎤 Dinle</button>
-      <button class="blue" onclick="morningMode()">☀️ Günaydın</button>
-      <button class="blue" onclick="readPlan()">📅 Plan</button>
-      <button class="blue" onclick="getWeather()">🌤️ Hava</button>
-      <button class="green" onclick="dailyReport()">📊 Rapor</button>
+      <button onclick="morningMode()">☀️ Günaydın</button>
+      <button onclick="getWeather()">🌤️ Hava</button>
+      <button onclick="readPlan()">📅 Plan</button>
+      <button onclick="dailyReport()">📊 Rapor</button>
+      <button onclick="webSearchPrompt()">🌐 Ara</button>
       <button class="red" onclick="clearAll()">Sıfırla</button>
     </div>
 
-    <div class="textbox">
-      Komut örnekleri:<br>
-      <span class="small">
-      “benim adım Kerem” • “bugün antrenmanım saat 5 de” • “10 dakika sonra uyar” • “hava nasıl” • “not al ödev var”
-      </span>
+    <div class="log" id="log">
+      JARVIS hazır. Örnek: “hava nasıl”, “bugün antrenmanım saat 5 de”, “8 saat uyudum”, “matematik ödevim bitti”, “Atatürk kimdir ara”.
     </div>
-
-    <div id="log" class="log">JARVIS hazır. Yuvarlağa dokun.</div>
   </div>
 </div>
 
 <script>
-const core = document.getElementById("core");
-const log = document.getElementById("log");
+const core=document.getElementById("core");
+const coreText=document.getElementById("coreText");
+const log=document.getElementById("log");
+const drawer=document.getElementById("drawer");
 
-let reminders = JSON.parse(localStorage.getItem("jarvis_reminders") || "[]");
-let notes = JSON.parse(localStorage.getItem("jarvis_notes") || "[]");
-let profile = JSON.parse(localStorage.getItem("jarvis_profile") || "{}");
+let reminders=JSON.parse(localStorage.getItem("jx_reminders")||"[]");
+let notes=JSON.parse(localStorage.getItem("jx_notes")||"[]");
+let profile=JSON.parse(localStorage.getItem("jx_profile")||"{}");
+let sleep=JSON.parse(localStorage.getItem("jx_sleep")||"[]");
+let homework=JSON.parse(localStorage.getItem("jx_homework")||"[]");
 
 function save(){
-  localStorage.setItem("jarvis_reminders", JSON.stringify(reminders));
-  localStorage.setItem("jarvis_notes", JSON.stringify(notes));
-  localStorage.setItem("jarvis_profile", JSON.stringify(profile));
+  localStorage.setItem("jx_reminders",JSON.stringify(reminders));
+  localStorage.setItem("jx_notes",JSON.stringify(notes));
+  localStorage.setItem("jx_profile",JSON.stringify(profile));
+  localStorage.setItem("jx_sleep",JSON.stringify(sleep));
+  localStorage.setItem("jx_homework",JSON.stringify(homework));
+  renderPanel();
 }
-
-function write(t){
-  log.innerHTML = t + "<br><br>" + log.innerHTML;
-}
-
-function speak(text){
+function write(t){log.innerHTML=t+"<br><br>"+log.innerHTML}
+function setState(s,t){core.className="core "+s;coreText.innerText=t}
+function speak(t){
   speechSynthesis.cancel();
-
-  core.className = "core speak";
-  core.innerText = "KONUŞUYOR";
-
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "tr-TR";
-  u.rate = 1;
-  u.pitch = 1;
-
-  u.onend = () => {
-    core.className = "core";
-    core.innerText = "DOKUN";
-  };
-
+  setState("speak","KONUŞUYOR");
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="tr-TR";u.rate=1;u.pitch=1;
+  u.onend=()=>setState("","DOKUN");
   speechSynthesis.speak(u);
-  write("JARVIS: " + text);
+  write("JARVIS: "+t);
 }
-
 function startJarvis(){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if(!SR){
-    speak("Bu tarayıcı sesli komutu desteklemiyor. Chrome veya Google uygulamasında dene.");
-    return;
-  }
-
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){speak("Bu tarayıcı sesli komutu desteklemiyor. Chrome veya Android cihaz daha iyi çalışır.");return}
   speechSynthesis.cancel();
-
-  const rec = new SR();
-  rec.lang = "tr-TR";
-  rec.continuous = false;
-  rec.interimResults = false;
-
-  core.className = "core listen";
-  core.innerText = "DİNLİYOR";
-
-  rec.onresult = e => {
-    const text = e.results[0][0].transcript;
-    write("SEN: " + text);
-    handle(text);
-  };
-
-  rec.onerror = () => {
-    core.className = "core";
-    core.innerText = "DOKUN";
-    speak("Seni duyamadım efendim.");
-  };
-
-  rec.onend = () => {
-    if(core.classList.contains("listen")){
-      core.className = "core";
-      core.innerText = "DOKUN";
-    }
-  };
-
-  rec.start();
-}
-
-function handle(text){
-  text = (text || "").toLowerCase().trim();
-  if(!text){
-    speak("Komut duyamadım efendim.");
-    return;
+  const rec=new SR();
+  rec.lang="tr-TR";
+  rec.continuous=true;
+  rec.interimResults=false;
+  let finalText="";
+  setState("listen","DİNLİYOR");
+  rec.onresult=e=>{finalText=e.results[e.results.length-1][0].transcript}
+  rec.onerror=()=>{setState("","DOKUN");speak("Mikrofon izni veya tarayıcı engeli olabilir efendim.")}
+  rec.onend=()=>{
+    setState("","DOKUN");
+    if(finalText){write("SEN: "+finalText);handle(finalText)}
+    else speak("Seni duyamadım efendim. Biraz daha yüksek sesle tekrar deneyin.")
   }
+  rec.start();
+  setTimeout(()=>{try{rec.stop()}catch(e){}},5000);
+}
+function handle(text){
+  text=(text||"").toLowerCase().trim();
+  document.getElementById("manual").value="";
+  if(!text)return;
 
   if(text.includes("benim adım")){
-    profile.name = text.split("benim adım")[1].trim();
-    save();
-    speak("Tanıştığımıza memnun oldum " + profile.name + ".");
-    return;
+    profile.name=text.split("benim adım")[1].trim();save();
+    speak("Kaydettim efendim. Bundan sonra size "+profile.name+" diye hitap edebilirim.");return;
   }
 
-  if(text.includes("ben geldim") || text.includes("günaydın")){
-    morningMode();
-    return;
+  const sleepMatch=text.match(/(\d+)\s*saat\s*(\d+)?\s*(dakika)?\s*uyudum/);
+  if(sleepMatch){
+    const h=parseInt(sleepMatch[1]); const m=sleepMatch[2]?parseInt(sleepMatch[2]):0;
+    sleep.unshift({h,m,date:new Date().toLocaleDateString("tr-TR")}); save();
+    speak("Uyku kaydınız eklendi efendim. "+h+" saat "+m+" dakika.");return;
   }
 
-  if(text.includes("hava")){
-    getWeather();
-    return;
+  if(text.includes("ödev")){
+    const done=text.includes("bitti")||text.includes("tamamlandı")||text.includes("yaptım");
+    const name=text.replace("ödevim","").replace("ödev","").replace("bitti","").replace("tamamlandı","").replace("yaptım","").trim()||"ödev";
+    homework.unshift({name,done,date:new Date().toLocaleDateString("tr-TR")}); save();
+    speak(done?name+" ödevi tamamlandı olarak kaydedildi.":name+" ödevi listeye eklendi.");return;
   }
 
-  if(text.includes("saat kaç")){
-    const now = new Date();
-    speak("Efendim saat " + now.getHours() + ":" + String(now.getMinutes()).padStart(2,"0"));
-    return;
-  }
-
+  if(text.includes("ben geldim")||text.includes("günaydın")){morningMode();return}
+  if(text.includes("hava")){getWeather();return}
+  if(text.includes("saat kaç")){const n=new Date();speak("Efendim saat "+n.getHours()+":"+String(n.getMinutes()).padStart(2,"0"));return}
   if(text.includes("not al")){
-    const note = text.replace("not al","").trim() || "boş not";
-    notes.push({text:note,time:Date.now()});
-    save();
-    speak("Not aldım efendim: " + note);
-    return;
+    const note=text.replace("not al","").trim()||"boş not";
+    notes.unshift({text:note,date:new Date().toLocaleString("tr-TR")});save();
+    speak("Not aldım efendim: "+note);return;
+  }
+  if(text.includes("notlarımı oku")){speak(notes.length?notes.map(n=>n.text).join(". "):"Kayıtlı not yok efendim.");return}
+  if(text.includes("plan")||text.includes("hatırlatma")){readPlan();return}
+  if(text.includes("rapor")){dailyReport();return}
+  if(text.includes("youtube aç")){speak("YouTube açılıyor.");window.open("https://youtube.com","_blank");return}
+  if(text.includes("google aç")){speak("Google açılıyor.");window.open("https://google.com","_blank");return}
+
+  const after=text.match(/(\d+)\s*dakika\s*sonra/);
+  if(after){
+    const mins=parseInt(after[1]);
+    reminders.push({text:"hatırlatma",time:Date.now()+mins*60000,done:false});save();
+    speak(mins+" dakika sonra uyaracağım efendim.");return;
   }
 
-  if(text.includes("notlarımı oku") || text.includes("notları oku")){
-    if(!notes.length){
-      speak("Kayıtlı not yok efendim.");
-    }else{
-      speak("Notlarınız: " + notes.map(n=>n.text).join(". "));
-    }
-    return;
+  const hm=text.match(/saat\s*(\d{1,2})([:.](\d{2}))?/);
+  if(hm){
+    let hour=parseInt(hm[1]);let minute=hm[3]?parseInt(hm[3]):0;
+    if(hour<8&&!text.includes("sabah"))hour+=12;
+    const target=new Date();target.setHours(hour,minute,0,0);
+    if(target.getTime()<Date.now())target.setDate(target.getDate()+1);
+    let name=text.replace(/bugün|yarın|benim|var/g,"").replace(/saat\s*\d{1,2}([:.]\d{2})?/g,"").trim()||"hatırlatma";
+    reminders.push({text:name,time:target.getTime(),done:false});save();
+    speak("Tamam efendim. "+name+" saat "+hour+":"+String(minute).padStart(2,"0")+" için kaydedildi.");return;
   }
 
-  if(text.includes("plan") || text.includes("hatırlatma")){
-    readPlan();
-    return;
-  }
-
-  if(text.includes("rapor")){
-    dailyReport();
-    return;
-  }
-
-  if(text.includes("youtube aç")){
-    speak("YouTube açılıyor efendim.");
-    window.open("https://youtube.com","_blank");
-    return;
-  }
-
-  if(text.includes("google aç")){
-    speak("Google açılıyor efendim.");
-    window.open("https://google.com","_blank");
-    return;
-  }
-
-  const afterMatch = text.match(/(\d+)\s*dakika\s*sonra/);
-  if(afterMatch){
-    const mins = parseInt(afterMatch[1]);
-    let name = text.replace(/(\d+)\s*dakika\s*sonra/g,"").replace("beni","").replace("uyar","").trim();
-    if(!name) name = "hatırlatma";
-
-    reminders.push({
-      text:name,
-      time:Date.now() + mins * 60000,
-      done:false
-    });
-
-    save();
-    speak("Tamam efendim. " + mins + " dakika sonra uyaracağım.");
-    return;
-  }
-
-  const hourMatch = text.match(/saat\s*(\d{1,2})([:.](\d{2}))?/);
-  if(hourMatch){
-    let hour = parseInt(hourMatch[1]);
-    let minute = hourMatch[3] ? parseInt(hourMatch[3]) : 0;
-
-    if(hour < 8 && !text.includes("sabah")) hour += 12;
-
-    const target = new Date();
-    target.setHours(hour, minute, 0, 0);
-    if(target.getTime() < Date.now()) target.setDate(target.getDate() + 1);
-
-    let name = text
-      .replace(/bugün/g,"")
-      .replace(/yarın/g,"")
-      .replace(/benim/g,"")
-      .replace(/var/g,"")
-      .replace(/saat\s*\d{1,2}([:.]\d{2})?/g,"")
-      .trim();
-
-    if(!name) name = "hatırlatma";
-
-    reminders.push({
-      text:name,
-      time:target.getTime(),
-      done:false
-    });
-
-    save();
-    speak("Tamam efendim. " + name + " için saat " + hour + ":" + String(minute).padStart(2,"0") + " hatırlatacağım.");
-    return;
+  if(text.includes("ara")||text.includes("kimdir")||text.includes("nedir")){
+    smartSearch(text);return;
   }
 
   miniAI(text);
 }
-
-function miniAI(text){
-  if(text.includes("nasılsın")){
-    speak("Sistemlerim aktif efendim. Size yardımcı olmaya hazırım.");
-  }else if(text.includes("ronaldo") && text.includes("messi")){
-    speak("Net cevap istiyorsanız Ronaldo derim efendim.");
-  }else if(text.includes("sıkıldım")){
-    speak("Kısa bir oyun, müzik veya yürüyüş iyi gelebilir efendim.");
-  }else if(text.includes("motivasyon")){
-    speak("Bugün küçük bir adım bile seni hedefe yaklaştırır efendim.");
-  }else{
-    speak("Bunu tam anlayamadım efendim. Hava, saat, not ve hatırlatma komutlarını kullanabilirsiniz.");
-  }
-}
-
-function morningMode(){
-  const now = new Date();
-  const name = profile.name || "efendim";
-
-  const today = reminders.filter(r =>
-    !r.done && new Date(r.time).toDateString() === new Date().toDateString()
-  );
-
-  let msg = "Günaydın " + name + ". Saat " + now.getHours() + ":" + String(now.getMinutes()).padStart(2,"0") + ". ";
-
-  if(today.length){
-    msg += "Bugünkü planınız: " + today.map(r=>{
-      const d = new Date(r.time);
-      return r.text + " saat " + d.getHours() + ":" + String(d.getMinutes()).padStart(2,"0");
-    }).join(", ");
-  }else{
-    msg += "Bugün için kayıtlı plan yok.";
-  }
-
-  speak(msg);
-}
-
-function readPlan(){
-  const active = reminders.filter(r=>!r.done);
-
-  if(!active.length){
-    speak("Aktif hatırlatma yok efendim.");
-    return;
-  }
-
-  const msg = active.map(r=>{
-    const d = new Date(r.time);
-    return r.text + " saat " + d.getHours() + ":" + String(d.getMinutes()).padStart(2,"0");
-  }).join(". ");
-
-  speak("Aktif planlarınız: " + msg);
-}
-
-async function getWeather(){
-  speak("Hava durumunu kontrol ediyorum efendim.");
-
+async function smartSearch(q){
+  let clean=q.replace("ara","").trim();
+  if(!clean)clean=q;
+  speak(clean+" hakkında bilgi arıyorum efendim.");
   try{
-    let lat = 40.195;
-    let lon = 29.06;
-
-    if(navigator.geolocation){
-      await new Promise(resolve=>{
-        navigator.geolocation.getCurrentPosition(pos=>{
-          lat = pos.coords.latitude;
-          lon = pos.coords.longitude;
-          resolve();
-        },()=>resolve(),{timeout:3000});
-      });
-    }
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const temp = Math.round(data.current.temperature_2m);
-    const wind = Math.round(data.current.wind_speed_10m);
-    const desc = weatherText(data.current.weather_code);
-
-    speak("Efendim hava " + temp + " derece. Durum " + desc + ". Rüzgar saatte " + wind + " kilometre.");
+    const title=encodeURIComponent(clean.replace("kimdir","").replace("nedir","").trim());
+    const url="https://tr.wikipedia.org/api/rest_v1/page/summary/"+title;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.extract){speak(data.extract.substring(0,320));}
+    else{window.open("https://www.google.com/search?q="+encodeURIComponent(clean),"_blank");speak("Net bilgi bulamadım, Google araması açıyorum.");}
   }catch(e){
-    speak("Hava durumunu alamadım efendim.");
+    window.open("https://www.google.com/search?q="+encodeURIComponent(clean),"_blank");
+    speak("Google araması açıyorum efendim.");
   }
 }
-
-function weatherText(code){
-  if(code === 0) return "açık";
-  if([1,2,3].includes(code)) return "parçalı bulutlu";
-  if([45,48].includes(code)) return "sisli";
-  if([51,53,55,61,63,65].includes(code)) return "yağmurlu";
-  if([71,73,75,77].includes(code)) return "karlı";
-  if([95,96,99].includes(code)) return "fırtınalı";
-  return "normal";
+function webSearchPrompt(){const q=prompt("Ne arayayım?");if(q)smartSearch(q)}
+function miniAI(t){
+  if(t.includes("nasılsın"))speak("Sistemlerim aktif efendim.");
+  else if(t.includes("motivasyon"))speak("Bugün küçük bir ilerleme bile seni hedefe yaklaştırır.");
+  else if(t.includes("ronaldo")&&t.includes("messi"))speak("Net cevap istiyorsanız Ronaldo derim efendim.");
+  else speak("Bunu tam anlayamadım. İstersen sonuna ara kelimesi ekleyip internette aratabilirsin.");
 }
-
-function dailyReport(){
-  const name = profile.name || "efendim";
-  const active = reminders.filter(r=>!r.done).length;
-  const noteCount = notes.length;
-  speak(name + ", günlük raporunuz: " + active + " aktif plan, " + noteCount + " kayıtlı not var.");
+function morningMode(){
+  const n=new Date();const name=profile.name||"efendim";
+  const lastSleep=sleep[0]?sleep[0].h+" saat "+sleep[0].m+" dakika uyudunuz. ":"Uyku kaydı yok. ";
+  const openHw=homework.filter(h=>!h.done).length;
+  speak("Günaydın "+name+". Saat "+n.getHours()+":"+String(n.getMinutes()).padStart(2,"0")+". "+lastSleep+"Bitmemiş ödev sayınız "+openHw+".");
 }
-
-function checkReminders(){
-  const now = Date.now();
-
-  reminders.forEach(r=>{
-    if(!r.done && now >= r.time){
-      r.done = true;
-      save();
-
-      const msg = "Efendim, " + r.text + " saati geldi.";
-      speak(msg);
-
-      if(Notification.permission === "granted"){
-        new Notification("JARVIS", {body:msg});
-      }
+function readPlan(){
+  const active=reminders.filter(r=>!r.done);
+  if(!active.length){speak("Aktif plan yok efendim.");return}
+  speak("Planlarınız: "+active.map(r=>r.text+" saat "+new Date(r.time).getHours()+":"+String(new Date(r.time).getMinutes()).padStart(2,"0")).join(". "));
+}
+async function getWeather(){
+  speak("Hava durumunu kontrol ediyorum.");
+  try{
+    let lat=40.195,lon=29.06;
+    if(navigator.geolocation){
+      await new Promise(ok=>navigator.geolocation.getCurrentPosition(p=>{lat=p.coords.latitude;lon=p.coords.longitude;ok()},()=>ok(),{timeout:3000}));
     }
-  });
+    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`);
+    const d=await res.json();
+    speak("Hava "+Math.round(d.current.temperature_2m)+" derece. Durum "+weatherText(d.current.weather_code)+". Rüzgar "+Math.round(d.current.wind_speed_10m)+" kilometre.");
+  }catch(e){speak("Hava durumunu alamadım.")}
 }
-
-function clearAll(){
-  if(confirm("Her şeyi silmek istiyor musun?")){
-    reminders = [];
-    notes = [];
-    profile = {};
-    save();
-    speak("Tüm veriler silindi efendim.");
-  }
+function weatherText(c){if(c===0)return"açık";if([1,2,3].includes(c))return"parçalı bulutlu";if([45,48].includes(c))return"sisli";if([51,53,55,61,63,65].includes(c))return"yağmurlu";if([71,73,75,77].includes(c))return"karlı";return"normal"}
+function dailyReport(){
+  const undone=homework.filter(h=>!h.done).length;
+  speak("Rapor: "+reminders.filter(r=>!r.done).length+" aktif plan, "+notes.length+" not, "+undone+" bitmemiş ödev var.");
 }
-
-if("Notification" in window){
-  Notification.requestPermission();
+function checkReminders(){
+  reminders.forEach(r=>{if(!r.done&&Date.now()>=r.time){r.done=true;save();speak("Efendim, "+r.text+" saati geldi.")}})
 }
-
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+function renderPanel(){
+  document.getElementById("sleepBox").innerHTML=sleep[0]?sleep[0].date+" — "+sleep[0].h+" saat "+sleep[0].m+" dk":"Henüz kayıt yok";
+  document.getElementById("homeworkBox").innerHTML=homework.length?homework.slice(0,5).map(h=>(h.done?"✅ ":"⏳ ")+h.name).join("<br>"):"Henüz kayıt yok";
+  document.getElementById("planBox").innerHTML=reminders.filter(r=>!r.done).length?reminders.filter(r=>!r.done).slice(0,5).map(r=>"• "+r.text+" "+new Date(r.time).getHours()+":"+String(new Date(r.time).getMinutes()).padStart(2,"0")).join("<br>"):"Henüz plan yok";
+  document.getElementById("noteBox").innerHTML=notes.length?notes.slice(0,4).map(n=>"• "+n.text).join("<br>"):"Henüz not yok";
 }
-
-setInterval(checkReminders,1000);
+function toggleDrawer(){drawer.classList.toggle("open")}
+function clearAll(){if(confirm("Her şeyi silmek istiyor musun?")){reminders=[];notes=[];profile={};sleep=[];homework=[];save();speak("Tüm kayıtlar silindi.")}}
+function clock(){document.getElementById("clock").innerText=new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+setInterval(clock,1000);setInterval(checkReminders,1000);clock();renderPanel();
+if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
-
 </body>
 </html>
