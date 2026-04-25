@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS 2.0</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2733">
+<link rel="apple-touch-icon" href="icon.png">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;background:radial-gradient(circle,#0b2733,#02060a 70%);
+  color:white;font-family:Arial;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.app{width:min(820px,94%);text-align:center}
+h1{letter-spacing:10px;color:#ffe066;text-shadow:0 0 20px #ffe066}
+.sub{color:#8deaff;margin-bottom:12px}
+.core{
+  width:310px;height:310px;border-radius:50%;margin:20px auto;border:4px solid #36b7ff;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;
+  box-shadow:0 0 45px #36b7ff,inset 0 0 60px #06384c;transition:.25s;position:relative
+}
+.core:before,.core:after{
+  content:"";position:absolute;border-radius:50%;inset:-22px;border:2px dashed rgba(54,183,255,.35);
+  animation:spin 10s linear infinite
+}
+.core:after{inset:-45px;animation-duration:16s}
+.listen{border-color:#00ff88;box-shadow:0 0 70px #00ff88,inset 0 0 75px #003d25;transform:scale(1.03)}
+.speak{border-color:#ffd84d;box-shadow:0 0 70px #ffd84d,inset 0 0 75px #4b3900}
+@keyframes spin{to{transform:rotate(360deg)}}
+.panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:16px}
+button{border:0;border-radius:14px;padding:12px 16px;margin:5px;font-weight:900;cursor:pointer}
+.main{background:#ffd84d;color:#111}.blue{background:#124052;color:white}.red{background:#9c2020;color:white}.green{background:#116b3a;color:white}
+input{width:100%;padding:14px;border-radius:14px;border:0;margin:10px 0;background:#071923;color:white}
+.log{text-align:left;max-height:210px;overflow:auto;margin-top:12px;background:rgba(0,0,0,.25);border-radius:16px;padding:12px;color:#dff9ff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.card{background:rgba(255,255,255,.07);border-radius:14px;padding:10px;text-align:left}
+.small{font-size:13px;color:#bdefff;line-height:1.5}
+@media(max-width:650px){.core{width:250px;height:250px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>JARVIS</h1>
+  <div class="sub">JARVIS 2.0 • PWA • hava • not • plan • profil</div>
+
+  <div id="core" class="core">HAZIR</div>
+
+  <div class="panel">
+    <button class="main" onclick="listen()">🎤 Konuş</button>
+    <button class="blue" onclick="morningMode()">☀️ Günaydın</button>
+    <button class="blue" onclick="readPlan()">📅 Plan</button>
+    <button class="blue" onclick="getWeather()">🌤️ Hava</button>
+    <button class="green" onclick="dailyReport()">📊 Rapor</button>
+    <button class="red" onclick="clearAll()">Sıfırla</button>
+
+    <input id="cmd" placeholder="Örn: benim adım Kerem / bugün antrenmanım saat 5 de / not al ödev var / hava nasıl">
+    <button class="main" onclick="handle(document.getElementById('cmd').value)">Gönder</button>
+
+    <div class="grid">
+      <div class="card">
+        <b>Profil</b>
+        <div id="profileBox" class="small"></div>
+      </div>
+      <div class="card">
+        <b>Komutlar</b>
+        <div class="small">
+          saat kaç • hava nasıl • not al • notlarımı oku • planım ne • youtube aç • google aç • rapor
+        </div>
+      </div>
+    </div>
+
+    <div id="log" class="log">JARVIS başlatıldı...</div>
+  </div>
+</div>
+
+<script>
+const core=document.getElementById("core");
+const log=document.getElementById("log");
+const profileBox=document.getElementById("profileBox");
+
+let reminders=JSON.parse(localStorage.getItem("jarvis_reminders")||"[]");
+let notes=JSON.parse(localStorage.getItem("jarvis_notes")||"[]");
+let profile=JSON.parse(localStorage.getItem("jarvis_profile")||"{}");
+
+function save(){
+  localStorage.setItem("jarvis_reminders",JSON.stringify(reminders));
+  localStorage.setItem("jarvis_notes",JSON.stringify(notes));
+  localStorage.setItem("jarvis_profile",JSON.stringify(profile));
+  renderProfile();
+}
+
+function renderProfile(){
+  profileBox.innerHTML =
+    "İsim: "+(profile.name||"bilinmiyor")+"<br>"+
+    "Not: "+notes.length+" kayıt<br>"+
+    "Plan: "+reminders.filter(r=>!r.done).length+" aktif";
+}
+
+function write(t){ log.innerHTML=t+"<br><br>"+log.innerHTML; }
+
+function speak(t){
+  core.className="core speak";
+  core.innerText="KONUŞUYOR";
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="tr-TR"; u.rate=1; u.pitch=1;
+  u.onend=()=>{core.className="core";core.innerText="HAZIR"};
+  speechSynthesis.speak(u);
+  write("JARVIS: "+t);
+}
+
+function listen(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){speak("Bu tarayıcı sesli komutu desteklemiyor.");return}
+  const r=new SR();
+  r.lang="tr-TR"; r.continuous=false; r.interimResults=false;
+  core.className="core listen"; core.innerText="DİNLİYOR";
+  r.onresult=e=>{
+    const text=e.results[0][0].transcript;
+    write("SEN: "+text);
+    handle(text);
+  };
+  r.onerror=()=>speak("Seni duyamadım efendim.");
+  r.onend=()=>{if(core.classList.contains("listen")){core.className="core";core.innerText="HAZIR"}};
+  r.start();
+}
+
+function handle(text){
+  text=(text||"").toLowerCase().trim();
+  document.getElementById("cmd").value="";
+  if(!text)return;
+
+  if(text.includes("benim adım")){
+    profile.name=text.split("benim adım")[1].trim();
+    save();
+    speak("Tanıştığımıza memnun oldum "+profile.name+".");
+    return;
+  }
+
+  if(text.includes("ben geldim")||text.includes("günaydın")){
+    morningMode();return;
+  }
+
+  if(text.includes("hava")){
+    getWeather();return;
+  }
+
+  if(text.includes("saat kaç")){
+    const now=new Date();
+    speak("Efendim saat "+now.getHours()+":"+String(now.getMinutes()).padStart(2,"0"));
+    return;
+  }
+
+  if(text.includes("not al")){
+    let note=text.replace("not al","").trim() || "boş not";
+    notes.push({text:note,time:Date.now()});
+    save();
+    speak("Not aldım efendim: "+note);
+    return;
+  }
+
+  if(text.includes("notlarımı oku")||text.includes("notları oku")){
+    if(!notes.length){speak("Kayıtlı not yok efendim.");return}
+    speak("Notlarınız: "+notes.map(n=>n.text).join(". "));
+    return;
+  }
+
+  if(text.includes("rapor")){
+    dailyReport();return;
+  }
+
+  if(text.includes("plan")||text.includes("hatırlatma")){
+    readPlan();return;
+  }
+
+  if(text.includes("youtube aç")){
+    speak("YouTube açılıyor efendim.");
+    window.open("https://youtube.com","_blank");
+    return;
+  }
+
+  if(text.includes("google aç")){
+    speak("Google açılıyor efendim.");
+    window.open("https://google.com","_blank");
+    return;
+  }
+
+  if(text.includes("motivasyon")){
+    speak("Efendim, bugün küçük bir adım bile sizi hedefinize yaklaştırır. Başlayın, devamı gelir.");
+    return;
+  }
+
+  const afterMatch=text.match(/(\d+)\s*dakika\s*sonra/);
+  if(afterMatch){
+    const mins=parseInt(afterMatch[1]);
+    let name=text.replace(/(\d+)\s*dakika\s*sonra/g,"").replace("beni","").replace("uyar","").trim();
+    if(!name) name="hatırlatma";
+    reminders.push({text:name,time:Date.now()+mins*60000,done:false});
+    save();
+    speak("Tamam efendim. "+mins+" dakika sonra uyaracağım.");
+    return;
+  }
+
+  const hourMatch=text.match(/saat\s*(\d{1,2})([:.](\d{2}))?/);
+  if(hourMatch){
+    let hour=parseInt(hourMatch[1]);
+    let minute=hourMatch[3]?parseInt(hourMatch[3]):0;
+    if(hour<8 && !text.includes("sabah")) hour+=12;
+
+    const target=new Date();
+    target.setHours(hour,minute,0,0);
+    if(target<Date.now()) target.setDate(target.getDate()+1);
+
+    let name=text
+      .replace(/bugün/g,"").replace(/yarın/g,"").replace(/benim/g,"")
+      .replace(/var/g,"").replace(/saat\s*\d{1,2}([:.]\d{2})?/g,"").trim();
+
+    if(!name) name="hatırlatma";
+
+    reminders.push({text:name,time:target.getTime(),done:false});
+    save();
+
+    speak("Tamam efendim. "+name+" için saat "+hour+":"+String(minute).padStart(2,"0")+" hatırlatacağım.");
+    return;
+  }
+
+  miniAI(text);
+}
+
+function miniAI(text){
+  if(text.includes("nasılsın")){
+    speak("Sistemlerim aktif efendim. Size yardımcı olmaya hazırım.");
+  }else if(text.includes("ronaldo") && text.includes("messi")){
+    speak("Efendim, ikisi de efsane. Ama net cevap isterseniz Ronaldo derim.");
+  }else if(text.includes("sıkıldım")){
+    speak("Efendim, kısa bir yürüyüş, müzik ya da küçük bir oyun iyi gelebilir.");
+  }else{
+    speak("Bunu tam anlayamadım efendim. Ama not, plan, hava ve saat komutlarında hazırım.");
+  }
+}
+
+function morningMode(){
+  const now=new Date();
+  const name=profile.name?profile.name:"efendim";
+  let msg="Günaydın "+name+". Saat "+now.getHours()+":"+String(now.getMinutes()).padStart(2,"0")+". ";
+  const today=reminders.filter(r=>!r.done && new Date(r.time).toDateString()===new Date().toDateString());
+  if(today.length){
+    msg+="Bugünkü planınız: "+today.map(r=>r.text+" saat "+new Date(r.time).getHours()+":"+String(new Date(r.time).getMinutes()).padStart(2,"0")).join(", ");
+  }else{
+    msg+="Bugün için kayıtlı plan yok.";
+  }
+  speak(msg);
+}
+
+function readPlan(){
+  const active=reminders.filter(r=>!r.done);
+  if(!active.length){speak("Aktif hatırlatma yok efendim.");return}
+  speak("Aktif planlarınız: "+active.map(r=>r.text+" saat "+new Date(r.time).getHours()+":"+String(new Date(r.time).getMinutes()).padStart(2,"0")).join(". "));
+}
+
+async function getWeather(){
+  speak("Hava durumunu kontrol ediyorum efendim.");
+  try{
+    let lat=40.195, lon=29.06;
+    if(navigator.geolocation){
+      await new Promise(resolve=>{
+        navigator.geolocation.getCurrentPosition(pos=>{
+          lat=pos.coords.latitude; lon=pos.coords.longitude; resolve();
+        },()=>resolve(),{timeout:3000});
+      });
+    }
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`;
+    const res=await fetch(url);
+    const data=await res.json();
+    const temp=Math.round(data.current.temperature_2m);
+    const wind=Math.round(data.current.wind_speed_10m);
+    const desc=weatherText(data.current.weather_code);
+    speak("Efendim hava "+temp+" derece. Durum "+desc+". Rüzgar saatte "+wind+" kilometre.");
+  }catch(e){
+    speak("Hava durumunu alamadım efendim.");
+  }
+}
+
+function weatherText(code){
+  if(code===0)return "açık";
+  if([1,2,3].includes(code))return "parçalı bulutlu";
+  if([45,48].includes(code))return "sisli";
+  if([51,53,55,61,63,65].includes(code))return "yağmurlu";
+  if([71,73,75,77].includes(code))return "karlı";
+  if([95,96,99].includes(code))return "fırtınalı";
+  return "normal";
+}
+
+function dailyReport(){
+  const active=reminders.filter(r=>!r.done).length;
+  const n=notes.length;
+  const name=profile.name?profile.name:"efendim";
+  speak(name+", günlük raporunuz: "+active+" aktif plan, "+n+" kayıtlı not var. Hava durumunu da kontrol edebilirim.");
+}
+
+function checkReminders(){
+  const now=Date.now();
+  reminders.forEach(r=>{
+    if(!r.done && now>=r.time){
+      r.done=true; save();
+      const msg="Efendim, "+r.text+" saati geldi.";
+      speak(msg);
+      if(Notification.permission==="granted"){
+        new Notification("JARVIS",{body:msg});
+      }
+    }
+  });
+}
+
+function clearAll(){
+  if(confirm("Her şeyi silmek istiyor musun?")){
+    reminders=[]; notes=[]; profile={};
+    save();
+    speak("Tüm veriler silindi efendim.");
+  }
+}
+
+if("Notification" in window) Notification.requestPermission();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+
+setInterval(checkReminders,1000);
+renderProfile();
+speak("JARVIS iki nokta sıfır aktif. Efendim, komutunuzu bekliyorum.");
+</script>
+
+</body>
+</html>
